@@ -1,81 +1,46 @@
-================================================================================
-ASTEROID DETECTION USING MACHINE LEARNING
-================================================================================
+# Hazardous Asteroid Detection with Machine Learning
 
-1. Install Required Packages:
+Classifies potentially hazardous asteroids (PHAs) from orbital and physical parameters, and serves the model in an interactive Streamlit app.
 
-   pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn plotly streamlit jupyter
+Team project at Blekinge Institute of Technology (BTH), 2026.
 
-2. Verify Installation:
+## Results
 
-   python -c "import pandas, sklearn, imblearn; print('Ready!')"
+Evaluated on a held-out test set. F2 score is the main metric because missing a hazardous asteroid costs far more than a false alarm.
 
-================================================================================
-EXECUTION STEPS
-================================================================================
+| Model | F2 score | Recall (hazardous) |
+|---|---|---|
+| **Random Forest** | **0.988** | **99.0%** |
+| Linear SVM (calibrated) | 0.705 | 100% |
+| Logistic Regression | 0.703 | 100% |
 
-STEP 1: Train Models
----------------------
-Open terminal in project directory and run:
+## Approach
 
-   jupyter notebook
+- **Data:** About 958,000 asteroid records with orbital elements (e, a, q, i, MOID and more), size, albedo and uncertainty values. Target: `pha` (Y/N).
+- **Cleaning:** Dropped identifier and text columns and rows with missing values.
+- **Class imbalance:** Hazardous asteroids are extremely rare. The training set is rebalanced with SMOTE (minority raised to 30% of the majority) followed by undersampling to a 3:1 ratio. The test set keeps the real distribution.
+- **Models:** Logistic Regression, Random Forest and Linear SVM, all with class weighting, compared on F2, recall, precision and confusion matrices.
+- **Exploration:** Correlation analysis, feature importance and PCA visualisation.
+- **App:** Streamlit interface for exploring predictions.
 
-Open "asteroid_detection.ipynb" and click:
-   Kernel → Restart & Run All
+## Run it
 
-Wait 15-20 minutes for training to complete.
+```bash
+pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn plotly streamlit jupyter
+jupyter notebook                 # run Asteroid-Detection.ipynb (Kernel > Restart & Run All, about 15 to 20 min)
+python -m streamlit run app.py   # opens at http://localhost:8501
+```
 
-STEP 2: Run Streamlit App
---------------------------
-In terminal, run:
+`dataset.csv` (about 436 MB) is not included because of GitHub size limits. Place it in the project root before running the notebook.
 
-   python -m streamlit run app.py
+## Project structure
 
-App opens at http://localhost:8501
-Press Ctrl+C to stop.
+```
+Asteroid-Detection.ipynb   Data cleaning, resampling, training and evaluation
+app.py                     Streamlit app
+dataset.csv                Asteroid data (not included)
+```
 
-================================================================================
-FILE STRUCTURE
-================================================================================
+## Tech
 
-Asteroid Detection/
-├── dataset.csv                     (Dataset - Required)
-├── asteroid_detection.ipynb        (Main notebook)
-├── app.py                          (Streamlit app)
-└── README.md                       (This file)
-
-================================================================================
-EXPECTED RESULTS
-================================================================================
-
-Model Performance:
-- Random Forest:    F2-Score: 0.9879, Recall: 99.03%
-- SVM:              F2-Score: 0.7048, Recall: 100%
-- Logistic Reg:     F2-Score: 0.7033, Recall: 100%
-
-Total Execution Time: 15-20 minutes
-
-================================================================================
-TROUBLESHOOTING
-================================================================================
-
-Error: "Module not found"
-Fix: pip install [missing_package]
-
-Error: "File not found: dataset.csv"
-Fix: Place dataset.csv in project root directory
-
-Error: Memory issues
-Fix: Close other applications, restart Jupyter kernel
-
-================================================================================
-QUICK START
-================================================================================
-
-1. pip install [packages]
-2. jupyter notebook
-3. Run asteroid_detection.ipynb (Kernel → Restart & Run All)
-4. Save models (run code from Step 2)
-5. python -m streamlit run app.py
-
-Done!
+Python, scikit-learn, imbalanced-learn, pandas, NumPy, Matplotlib, Seaborn, Plotly, Streamlit.
